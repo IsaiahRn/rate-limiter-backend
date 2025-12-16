@@ -17,7 +17,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.*;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableMethodSecurity
@@ -26,6 +28,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final RateLimitingFilter rateLimitingFilter;
+    private final AppProperties appProperties; // uses app.cors.allowed-origins
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -63,8 +66,9 @@ public class SecurityConfig {
 
                         .anyRequest().authenticated()
                 )
+                // JWT must run before anything that relies on Authentication
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                // IMPORTANT: rate limiting needs the authenticated username -> run AFTER JWT filter
+                // Rate limiting needs authenticated username -> run AFTER JWT
                 .addFilterAfter(rateLimitingFilter, JwtAuthenticationFilter.class);
 
         return http.build();
@@ -73,11 +77,33 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200"));
+
+        // Prefer app.cors.allowed-origins (list). If blank, fall back to localhost.
+        List<String> allowed = appProperties.getCors().getAllowedOrigins();
+        if (allowed == null || allowed.isEmpty()) {
+            allowed = List.of("http://localhost:4200");
+        }
+
+        // Handle comma-separated single value if someone sets it as a string-like list in YAML/env
+        allowed = allowed.stream()
+                .flatMap(v -> Arrays.stream(v.split(",")))
+                .map(String::trim)
+                .filter(s -> !s.isBlank())
+                .collect(Collectors.toList());
+
+        config.setAllowedOrigins(allowed);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+
         // expose retry-after & rate headers so Angular can read them if needed
-        config.setExposedHeaders(List.of("Authorization", "Retry-After", "X-RateLimit-Remaining-Window", "X-RateLimit-Remaining-Month", "X-RateLimit-Soft-Throttled"));
+        config.setExposedHeaders(List.of(
+                "Authorization",
+                "Retry-After",
+                "X-RateLimit-Remaining-Window",
+                "X-RateLimit-Remaining-Month",
+                "X-RateLimit-Soft-Throttled"
+        ));
+
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
 
