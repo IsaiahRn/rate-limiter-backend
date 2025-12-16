@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ratelimiter-config
+  namespace: default
+data:
+  # Global rate-limiter properties
+  RATE_LIMITER_GLOBAL_WINDOW_SECONDS: "60"
+  RATE_LIMITER_GLOBAL_MAX_REQUESTS: "10000"
+  RATE_LIMITER_GLOBAL_MONTHLY_MAX_REQUESTS: "10000000"
+
+  # Spring datasource (assuming Postgres is reachable from cluster)
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://ratelimiter-postgres:5432/ratelimiter"
+  SPRING_DATASOURCE_USERNAME: "ratelimiter"
+  SPRING_DATASOURCE_PASSWORD: "ratelimiter"
+
+  # Redis
+  SPRING_REDIS_HOST: "ratelimiter-redis"
+  SPRING_REDIS_PORT: "6379"
+
+  # Kafka
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "ratelimiter-kafka:9092"

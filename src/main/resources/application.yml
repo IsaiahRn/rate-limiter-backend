@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: rate-limiter
+  datasource:
+    url: jdbc:postgresql://localhost:5432/rate_limiter
+    username: rate_limiter
+    password: rate_limiter
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+  redis:
+    host: localhost
+    port: 6379
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+server:
+  port: 8080
+
+security:
+  jwt:
+    # MUST be at least 32 characters for HS256
+    secret: "Y=?%a/BO*!Pi,qQ([(3ZrE[L41jzl-&U+;c6+pJ-Qok"
+    expiration-minutes: 60
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+rate-limiter:
+  global:
+    window-seconds: 60
+    max-requests: 10000
+    monthly-max-requests: 10000000
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

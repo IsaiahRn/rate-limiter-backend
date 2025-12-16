@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ratelimiter-service
+  namespace: default
+  labels:
+    app: ratelimiter
+spec:
+  selector:
+    app: ratelimiter      # match pods with this label
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80            # service port (inside cluster)
+      targetPort: 8080    # container port
