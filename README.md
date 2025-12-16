@@ -152,3 +152,28 @@ The rate limiter supports per-client time-window limits, monthly quotas, and glo
     - `kubectl apply -f k8s/service.yaml`
     - `kubectl port-forward svc/ratelimiter-service 8080:80`
     - Call APIs via `http://localhost:8080/...` from Postman.
+
+## Environment Variables
+
+### Local (example)
+```bash
+# Server
+export PORT=8080
+
+# JWT (must be >= 32 chars)
+export APP_JWT_SECRET="replace-with-a-32+char-secret-key"
+
+# CORS (Angular dev server)
+export APP_CORS_ALLOWED_ORIGINS="http://localhost:4200"
+
+# PostgreSQL (local example)
+export SPRING_DATASOURCE_URL="jdbc:postgresql://localhost:5432/rate_limiter"
+export SPRING_DATASOURCE_USERNAME="postgres"
+export SPRING_DATASOURCE_PASSWORD="postgres"
+
+# Seeder
+export APP_SEED_ENABLED=true
+export APP_SEED_RESET_PASSWORDS=false
+
+# Redis
+export REDIS_URL="redis://localhost:6379"
