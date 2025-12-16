@@ -22,7 +22,7 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 server:
-  port:
+  port: ${PORT:8080}
 
 app:
   jwt:
