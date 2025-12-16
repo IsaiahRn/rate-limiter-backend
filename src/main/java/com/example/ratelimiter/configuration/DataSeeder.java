@@ -20,12 +20,11 @@ public class DataSeeder {
     CommandLineRunner seedUsers() {
         return args -> {
             seedIfMissing("admin", "admin@123", Role.ADMIN);
-            seedIfMissing("client", "client@123", Role.CLIENT);
-
-            // Optional extra demo clients (use any you want)
-            seedIfMissing("client-soft", "client@123", Role.CLIENT);
-            seedIfMissing("client-month", "client@123", Role.CLIENT);
-            seedIfMissing("client-window", "client@123", Role.CLIENT);
+            seedIfMissing("client1", "client@123", Role.CLIENT);
+            seedIfMissing("client2", "client@123", Role.CLIENT);
+            seedIfMissing("client3", "client@123", Role.CLIENT);
+            seedIfMissing("client4", "client@123", Role.CLIENT);
+            seedIfMissing("client5", "client@123", Role.CLIENT);
         };
     }
 
